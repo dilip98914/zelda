@@ -17,4 +17,5 @@ class Room(object):
 		self.mob_list=pygame.sprite.Group()
 		self.item_list=pygame.sprite.Group()
 		self.dungeon=False
-		self.door_list=
+		self.door_list=pygame.sprite.Group()
+		
