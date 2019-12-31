@@ -1,12 +1,12 @@
 import random
 import pygame
 
-pygame.init() 
+# pygame.init() 
 
 rows=100
 cols=100
-size=10
-screen = pygame.display.set_mode((cols*size,rows*size)) 
+w,h=64/5,20/2
+# screen = pygame.display.set_mode((w*cols,h*rows)) 
 
 wallColor=(139,69,19)
 emptyColor=(255,255,255)
@@ -16,7 +16,6 @@ bgColor=(0,0,0)
 class Node(object):
 	def __init__(self,x,y,value,grid):
 		self.x,self.y=x,y
-		self.w,self.h=64,20
 		self.value,self.grid=value,grid
 		self.nbors1=[]
 		self.nbors2=[]
@@ -65,11 +64,14 @@ class Map(object):
 		self.map=[[0 for x  in range(self.cols)] for y in range(self.rows)]
 		self.fill_map()
 		self.add_all_nbours()
-		
+		self.generate_map1()
 	def add_all_nbours(self):
 		for y in range(self.rows):
 			for x in range(self.cols):
 				self.map[y][x].add_nbors()
+
+	def get_map(self):
+		return self.map
 
 
 	def fill_map(self):
@@ -100,6 +102,7 @@ class Map(object):
 						curr.value=0
 
 			counter+=1
+	# unused may be waste??
 	def generate_map2(self,iter=3):
 		counter=0
 		while counter<=iter:
@@ -125,17 +128,18 @@ class Map(object):
 					color=wallColor
 				else:
 					color=emptyColor
-				rect = pygame.Rect(x*64,y*20,64-1,20-1)
+				rect = pygame.Rect(x*w,y*h,w-1,h-1)
 				pygame.draw.rect(screen,color,rect)
 
 
 
 map=Map(cols,rows)
+# debugging
+# hx=cols/2
+# hy=rows/2
+# print(map.map[hy][hx])
+# print(map.map[hy][hx].getNbors(2))
 
-hx=cols/2
-hy=rows/2
-print(map.map[hy][hx])
-print(map.map[hy][hx].getNbors(2))
 def main_loop():
 	running=True
 	while running:
@@ -154,5 +158,5 @@ def main_loop():
 	   	pygame.display.flip()
 	pygame.quit()
 
-if __name__=='__main__':
-	main_loop() 
+# if __name__=='__main__':
+# 	main_loop() 
