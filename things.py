@@ -1,4 +1,4 @@
-import pygame
+import pygame,sys
 from cavegeneration import Map
 
 
@@ -40,19 +40,41 @@ class SingleTrees(Thing):
 
 
 
-class Room(object):
-	def __init__(self):
-		self.wall_list=pygame.sprite.Group()
-		self.mob_list=pygame.sprite.Group()
-		self.item_list=pygame.sprite.Group()
-		self.dungeon=False
-		self.door_list=pygame.sprite.Group()
-		
+pygame.init()
+
+screen=pygame.display.set_mode((800,600))
+
+
 class Overworld(object):
 	def __init__(self):
-		self.map=Map(100,100)
-		print(self.map.map[0][0])
+		map0=Map(10,10,[0],[1])
+		self.map=map0.get_raw_grid()
+		# print(self.map)
+		self.entity=Trees(0,0)
 
+	def main_loop(self):
+		running=True
+
+		while running:
+			screen.fill((255,255,255))
+			for event in pygame.event.get():
+				if event.type==pygame.QUIT:
+					running=False
+
+			self.draw()
+			pygame.display.flip()
+
+
+		pygame.quit()
+		sys.exit()
+
+	def draw(self):
+		for y in range(len(self.map)):
+			for x in range(len(self.map[0])):
+				# if(self.map.grid[y][x].value==1):
+					# entity=
+				screen.blit(self.entity.image, (x*self.entity.w,y*self.entity.h))
 
 if __name__=="__main__":
 	overworld=Overworld()
+	overworld.main_loop()

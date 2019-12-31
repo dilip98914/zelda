@@ -1,27 +1,17 @@
 import random
 import pygame
 
-# pygame.init() 
-
-rows=100
-cols=100
-w,h=64/5,20/2
-# screen = pygame.display.set_mode((w*cols,h*rows)) 
-
-wallColor=(139,69,19)
-emptyColor=(255,255,255)
-bgColor=(0,0,0)
-
-
 class Node(object):
-	def __init__(self,x,y,value,grid):
+	def __init__(self,x,y,value,grid,map0):
 		self.x,self.y=x,y
 		self.value,self.grid=value,grid
 		self.nbors1=[]
 		self.nbors2=[]
+		self.map0=map0
 		
 	def __str__(self):
 		return "Node at {}".format((self.x,self.y))
+
 	def getNbors(self,val):
 		if val==1:
 			for i in range(len(self.nbors1)):
@@ -36,7 +26,7 @@ class Node(object):
 		y=self.y
 		for  j in range(y-1,y+2):
 			for  i in range(x-1,x+2):
-				if j<0 or i<0 or i>=cols or j>=rows:
+				if j<0 or i<0 or i>=self.map0.cols or j>=self.map0.rows:
 					continue
 				if j==self.y and i==self.x:
 					continue
@@ -47,7 +37,7 @@ class Node(object):
 
 		for  j in range(y-2,y+3,2):
 			for  i in range(x-2,x+3,2):
-				if j<0 or i<0 or i>=cols or j>=rows:
+				if j<0 or i<0 or i>=self.map0.cols or j>=self.map0.rows:
 					continue
 				if j==self.y and i==self.x:
 					continue
@@ -59,104 +49,64 @@ class Node(object):
 
 
 class Map(object):
-	def __init__(self,cols,rows):
+	def __init__(self,cols,rows,empties=[0],solids=[1],prob=0.4):
 		self.cols,self.rows=cols,rows
-		self.map=[[0 for x  in range(self.cols)] for y in range(self.rows)]
+		self.empties,self.solids=empties,solids
+		self.prob=prob
+		self.grid=[[0 for x  in range(self.cols)] for y in range(self.rows)]
+		self.gridValues=[[0 for x  in range(self.cols)] for y in range(self.rows)]
 		self.fill_map()
 		self.add_all_nbours()
 		self.generate_map1()
+		self.to_values()
 	def add_all_nbours(self):
 		for y in range(self.rows):
 			for x in range(self.cols):
-				self.map[y][x].add_nbors()
+				self.grid[y][x].add_nbors()
 
-	def get_map(self):
-		return self.map
+	def get_raw_grid(self):
+		return self.gridValues
 
+
+	def to_values(self):
+		for y in range(self.rows):
+			for x in range(self.cols):
+				self.gridValues[y][x]=self.grid[y][x].value		
+
+	def print_map(self):
+		for y in range(self.rows):
+			for x in range(self.cols):
+				print(self.grid[y][x])
+			print('\n')
 
 	def fill_map(self):
 		for y in range(self.rows):
 			for x in range(self.cols):
-				if random.random()<0.4:
+				if random.random()<self.prob:
+					solid=random.choice(self.solids)
 					# place wall
-					self.map[y][x]=Node(x,y,1,self.map)
+					self.grid[y][x]=Node(x,y,solid,self.grid,self)
 				else:
-					self.map[y][x]=Node(x,y,0,self.map)
+					empty=random.choice(self.empties)
+					self.grid[y][x]=Node(x,y,empty,self.grid,self)
+	
 	def generate_map1(self,iter=4):
 		counter=0
 		while counter<=iter:
 			for y in range(self.rows):
 				for x in range(self.cols):
-					curr=self.map[y][x]
+					curr=self.grid[y][x]
 					score1=0
 					score2=0
 					for nn in curr.nbors1:
-						if nn.value==1:
+						if nn.value in self.solids:
 							score1+=1
 					for nn in curr.nbors2:
-						if nn.value==1:
+						if nn.value in self.solids:
 							score2+=1
 					if(score1>=5 or score2<=2):
-						curr.value=1
+						curr.value=random.choice(self.solids)
 					else:
-						curr.value=0
+						curr.value=random.choice(self.empties)
 
 			counter+=1
-	# unused may be waste??
-	def generate_map2(self,iter=3):
-		counter=0
-		while counter<=iter:
-			for y in range(self.rows):
-				for x in range(self.cols):
-					curr=self.map[y][x]
-					score1=0
-					for nn in curr.nbors1:
-						if nn.value==1:
-							score1+=1
-					if(score1>=5):
-						curr.value=1
-					else:
-						curr.value=0
-
-			counter+=1
-
-	def draw(self):
-		for y in range(self.rows):
-			for x in range(self.cols):
-				color=None
-				if(self.map[y][x].value==1):
-					color=wallColor
-				else:
-					color=emptyColor
-				rect = pygame.Rect(x*w,y*h,w-1,h-1)
-				pygame.draw.rect(screen,color,rect)
-
-
-
-map=Map(cols,rows)
-# debugging
-# hx=cols/2
-# hy=rows/2
-# print(map.map[hy][hx])
-# print(map.map[hy][hx].getNbors(2))
-
-def main_loop():
-	running=True
-	while running:
-		screen.fill((0,0,0))
-		map.draw()	
-	   	for event in pygame.event.get():
-	   		if event.type == pygame.QUIT:
-	   			running = False 
-	   		if event.type==pygame.KEYDOWN:
-	   			if event.key==pygame.K_LEFT:
-	   				map.generate_map1()
-	   			elif event.key==pygame.K_RIGHT:
-	   				# map.generate_map2()
-	   				pass
-	   				
-	   	pygame.display.flip()
-	pygame.quit()
-
-# if __name__=='__main__':
-# 	main_loop() 
