@@ -16,6 +16,7 @@ bgColor=(0,0,0)
 class Node(object):
 	def __init__(self,x,y,value,grid):
 		self.x,self.y=x,y
+		self.w,self.h=64,20
 		self.value,self.grid=value,grid
 		self.nbors1=[]
 		self.nbors2=[]
@@ -124,7 +125,7 @@ class Map(object):
 					color=wallColor
 				else:
 					color=emptyColor
-				rect = pygame.Rect(x*size,y*size,size-1,size-1)
+				rect = pygame.Rect(x*64,y*20,64-1,20-1)
 				pygame.draw.rect(screen,color,rect)
 
 
@@ -147,7 +148,8 @@ def main_loop():
 	   			if event.key==pygame.K_LEFT:
 	   				map.generate_map1()
 	   			elif event.key==pygame.K_RIGHT:
-	   				map.generate_map2()
+	   				# map.generate_map2()
+	   				pass
 	   				
 	   	pygame.display.flip()
 	pygame.quit()
