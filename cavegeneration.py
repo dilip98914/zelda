@@ -79,6 +79,42 @@ class Map(object):
 					self.map[y][x]=Node(x,y,1,self.map)
 				else:
 					self.map[y][x]=Node(x,y,0,self.map)
+	def generate_map1(self,iter=4):
+		counter=0
+		while counter<=iter:
+			for y in range(self.rows):
+				for x in range(self.cols):
+					curr=self.map[y][x]
+					score1=0
+					score2=0
+					for nn in curr.nbors1:
+						if nn.value==1:
+							score1+=1
+					for nn in curr.nbors2:
+						if nn.value==1:
+							score2+=1
+					if(score1>=5 or score2<=2):
+						curr.value=1
+					else:
+						curr.value=0
+
+			counter+=1
+	def generate_map2(self,iter=3):
+		counter=0
+		while counter<=iter:
+			for y in range(self.rows):
+				for x in range(self.cols):
+					curr=self.map[y][x]
+					score1=0
+					for nn in curr.nbors1:
+						if nn.value==1:
+							score1+=1
+					if(score1>=5):
+						curr.value=1
+					else:
+						curr.value=0
+
+			counter+=1
 
 	def draw(self):
 		for y in range(self.rows):
@@ -107,6 +143,12 @@ def main_loop():
 	   	for event in pygame.event.get():
 	   		if event.type == pygame.QUIT:
 	   			running = False 
+	   		if event.type==pygame.KEYDOWN:
+	   			if event.key==pygame.K_LEFT:
+	   				map.generate_map1()
+	   			elif event.key==pygame.K_RIGHT:
+	   				map.generate_map2()
+	   				
 	   	pygame.display.flip()
 	pygame.quit()
 
